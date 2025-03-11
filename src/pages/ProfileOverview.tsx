@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Clock, Users, Building, Shield, Database } from 'lucide-react';
+import { Clock, Users, Building, Shield, Database, Globe, FolderTree } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import { dataDomains, departments } from '@/data/mockData';
 
