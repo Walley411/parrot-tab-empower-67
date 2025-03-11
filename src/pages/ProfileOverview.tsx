@@ -1,11 +1,37 @@
 
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Clock } from 'lucide-react';
+import { Clock, Users, Building, Shield, Database } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
+import { dataDomains, departments } from '@/data/mockData';
 
 const ProfileOverview = () => {
   const user = useOutletContext<any>();
+
+  // Find domains where the user is a steward
+  const userDomains = dataDomains.filter(domain => 
+    domain.stewards.some(steward => steward.id === user.id)
+  );
+
+  // Find subdomains where the user is a steward
+  const userSubdomains = dataDomains.flatMap(domain => 
+    domain.subdomains.filter(subdomain => 
+      subdomain.stewards.some(steward => steward.id === user.id)
+    ).map(subdomain => ({
+      ...subdomain,
+      parentDomain: domain.name
+    }))
+  );
+
+  // Find systems where the user is an owner
+  const userSystems = departments.flatMap(dept => 
+    dept.systems.filter(system => 
+      system.owners.some(owner => owner.id === user.id)
+    ).map(system => ({
+      ...system,
+      department: dept.name
+    }))
+  );
 
   return (
     <div className="animate-fade-in">
@@ -25,9 +51,10 @@ const ProfileOverview = () => {
         </div>
       </div>
 
+      {/* Contact Information */}
       <h2 className="text-xl font-semibold mb-4">Contact information</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="flex items-start">
           <div className="w-8 h-8 mr-3 flex items-center justify-center text-teams-secondarytext">
             <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,6 +107,109 @@ const ProfileOverview = () => {
           </div>
         </div>
       </div>
+
+      {/* Management Section */}
+      {user.managers && user.managers.length > 0 && (
+        <div className="mb-6">
+          <div className="teams-card">
+            <div className="flex items-center text-teams-text mb-4">
+              <Users size={20} className="mr-2" />
+              <h2 className="text-lg font-semibold">Management Chain</h2>
+            </div>
+            
+            <div className="space-y-2">
+              {user.managers.map((manager: any) => (
+                <div key={manager.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
+                  <AvatarStatus 
+                    avatarUrl={manager.avatarUrl} 
+                    status={manager.status as 'available' | 'away' | 'busy' | 'offline'} 
+                    size="small" 
+                  />
+                  <div className="ml-3">
+                    <p className="font-medium">{manager.name}</p>
+                    <p className="text-xs text-teams-secondarytext">{manager.title}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Data Responsibilities Section */}
+      {(userDomains.length > 0 || userSubdomains.length > 0 || userSystems.length > 0) && (
+        <div className="mb-6">
+          <div className="teams-card">
+            <div className="flex items-center text-teams-text mb-4">
+              <Shield size={20} className="mr-2" />
+              <h2 className="text-lg font-semibold">Data Responsibilities</h2>
+            </div>
+            
+            {userDomains.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center text-teams-secondarytext mb-2">
+                  <Globe size={16} className="mr-2" />
+                  <span className="text-sm font-medium">Domain Steward</span>
+                </div>
+                
+                <div className="space-y-2">
+                  {userDomains.map(domain => (
+                    <div key={domain.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
+                      <Globe size={16} className="mr-2 text-teams-accent" />
+                      <div>
+                        <p className="font-medium">{domain.name}</p>
+                        <p className="text-xs text-teams-secondarytext">{domain.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {userSubdomains.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center text-teams-secondarytext mb-2">
+                  <FolderTree size={16} className="mr-2" />
+                  <span className="text-sm font-medium">Subdomain Steward</span>
+                </div>
+                
+                <div className="space-y-2">
+                  {userSubdomains.map(subdomain => (
+                    <div key={subdomain.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
+                      <FolderTree size={16} className="mr-2 text-teams-accent" />
+                      <div>
+                        <p className="font-medium">{subdomain.name}</p>
+                        <p className="text-xs text-teams-secondarytext">Part of {subdomain.parentDomain}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {userSystems.length > 0 && (
+              <div>
+                <div className="flex items-center text-teams-secondarytext mb-2">
+                  <Database size={16} className="mr-2" />
+                  <span className="text-sm font-medium">System Owner</span>
+                </div>
+                
+                <div className="space-y-2">
+                  {userSystems.map(system => (
+                    <div key={system.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
+                      <Database size={16} className="mr-2 text-teams-accent" />
+                      <div>
+                        <p className="font-medium">{system.name}</p>
+                        <p className="text-xs text-teams-secondarytext">{system.department}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

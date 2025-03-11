@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
-import { Database, Users, Laptop, Shield, ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
+import SearchFilterBar from '@/components/SearchFilterBar';
 
 // Mock enterprise software data with data owners and governance roles
 const enterpriseSoftware = [
@@ -113,6 +114,9 @@ const enterpriseSoftware = [
 
 const Sources = () => {
   const [expandedSoftware, setExpandedSoftware] = useState<string[]>([]);
+  const [filteredSoftware, setFilteredSoftware] = useState(enterpriseSoftware);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
 
   const toggleSoftware = (softwareId: string) => {
     setExpandedSoftware(prev => 
@@ -123,13 +127,49 @@ const Sources = () => {
   };
 
   // Group software by category
-  const softwareByCategory = enterpriseSoftware.reduce((acc, software) => {
+  const softwareByCategory = filteredSoftware.reduce((acc, software) => {
     if (!acc[software.category]) {
       acc[software.category] = [];
     }
     acc[software.category].push(software);
     return acc;
   }, {} as Record<string, typeof enterpriseSoftware>);
+
+  useEffect(() => {
+    let result = [...enterpriseSoftware];
+    
+    // Apply search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(software => 
+        software.name.toLowerCase().includes(query) ||
+        software.description.toLowerCase().includes(query) ||
+        software.dataOwners.some(owner => owner.name.toLowerCase().includes(query))
+      );
+    }
+    
+    // Apply filter
+    if (filterCategory) {
+      result = result.filter(software => software.category === filterCategory);
+    }
+    
+    setFilteredSoftware(result);
+  }, [searchQuery, filterCategory]);
+
+  const filterOptions = [
+    { value: 'Business Applications', label: 'Business Applications' },
+    { value: 'Productivity', label: 'Productivity' },
+    { value: 'IT Applications', label: 'IT Applications' },
+    { value: 'HR Applications', label: 'HR Applications' }
+  ];
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleFilter = (category: string) => {
+    setFilterCategory(category);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -139,68 +179,81 @@ const Sources = () => {
           <h2 className="text-lg font-semibold">Enterprise Software</h2>
         </div>
         
-        <div className="space-y-4">
-          {Object.entries(softwareByCategory).map(([category, softwares]) => (
-            <div key={category} className="space-y-2">
-              <h3 className="text-sm text-teams-secondarytext font-medium flex items-center">
-                <Laptop size={16} className="mr-2" />
-                {category}
-              </h3>
-              
-              {softwares.map(software => (
-                <div key={software.id} className="border border-teams-border rounded-md overflow-hidden">
-                  <div 
-                    className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
-                    onClick={() => toggleSoftware(software.id)}
-                  >
-                    <div className="flex items-center">
-                      <Database size={16} className="mr-3 text-teams-secondarytext" />
-                      <div>
-                        <span className="font-medium">{software.name}</span>
-                        <p className="text-xs text-teams-secondarytext">{software.description}</p>
+        <SearchFilterBar 
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          filterOptions={filterOptions}
+          placeholder="Search software, descriptions or owners..."
+        />
+        
+        {Object.keys(softwareByCategory).length === 0 ? (
+          <div className="text-teams-secondarytext text-center py-6">
+            No software found matching your criteria
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {Object.entries(softwareByCategory).map(([category, softwares]) => (
+              <div key={category} className="space-y-2">
+                <h3 className="text-sm text-teams-secondarytext font-medium flex items-center">
+                  <Laptop size={16} className="mr-2" />
+                  {category}
+                </h3>
+                
+                {softwares.map(software => (
+                  <div key={software.id} className="border border-teams-border rounded-md overflow-hidden">
+                    <div 
+                      className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
+                      onClick={() => toggleSoftware(software.id)}
+                    >
+                      <div className="flex items-center">
+                        <Database size={16} className="mr-3 text-teams-secondarytext" />
+                        <div>
+                          <span className="font-medium">{software.name}</span>
+                          <p className="text-xs text-teams-secondarytext">{software.description}</p>
+                        </div>
                       </div>
+                      {expandedSoftware.includes(software.id) ? 
+                        <ChevronDown size={18} /> : 
+                        <ChevronRight size={18} />
+                      }
                     </div>
-                    {expandedSoftware.includes(software.id) ? 
-                      <ChevronDown size={18} /> : 
-                      <ChevronRight size={18} />
-                    }
+                    
+                    {expandedSoftware.includes(software.id) && (
+                      <div className="animate-slide-in">
+                        <div className="p-3 bg-teams-gray border-t border-teams-border">
+                          <div className="flex items-center text-teams-secondarytext mb-2">
+                            <Users size={16} className="mr-2" />
+                            <span className="text-sm font-medium">Data Governance</span>
+                          </div>
+                          
+                          <div className="space-y-2 mt-2">
+                            {software.dataOwners.map(owner => (
+                              <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
+                                <AvatarStatus 
+                                  avatarUrl={owner.avatarUrl} 
+                                  status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
+                                  size="small" 
+                                />
+                                <div className="ml-3 flex-1">
+                                  <p className="font-medium text-sm">{owner.name}</p>
+                                  <p className="text-xs text-teams-secondarytext">{owner.title}</p>
+                                </div>
+                                <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
+                                  <Shield size={12} className="mr-1 text-teams-accent" />
+                                  {owner.role}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  
-                  {expandedSoftware.includes(software.id) && (
-                    <div className="animate-slide-in">
-                      <div className="p-3 bg-teams-gray border-t border-teams-border">
-                        <div className="flex items-center text-teams-secondarytext mb-2">
-                          <Users size={16} className="mr-2" />
-                          <span className="text-sm font-medium">Data Governance</span>
-                        </div>
-                        
-                        <div className="space-y-2 mt-2">
-                          {software.dataOwners.map(owner => (
-                            <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
-                              <AvatarStatus 
-                                avatarUrl={owner.avatarUrl} 
-                                status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
-                                size="small" 
-                              />
-                              <div className="ml-3 flex-1">
-                                <p className="font-medium text-sm">{owner.name}</p>
-                                <p className="text-xs text-teams-secondarytext">{owner.title}</p>
-                              </div>
-                              <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
-                                <Shield size={12} className="mr-1 text-teams-accent" />
-                                {owner.role}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
