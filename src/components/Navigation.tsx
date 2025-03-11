@@ -14,7 +14,8 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
     { name: 'Contact', path: `/profile/${userId}/contact` },
     { name: 'Organization', path: `/profile/${userId}/organization` },
     { name: 'Tell Parrot', path: `/profile/${userId}/tell-parrot` },
-    { name: 'Sources', path: `/profile/${userId}/sources` }
+    { name: 'Sources', path: `/profile/${userId}/sources` },
+    { name: 'Domains', path: `/profile/${userId}/domains` }
   ];
   
   return (

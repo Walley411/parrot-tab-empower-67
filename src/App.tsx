@@ -12,6 +12,7 @@ import ProfileContact from "./pages/ProfileContact";
 import ProfileOrganization from "./pages/ProfileOrganization";
 import TellParrot from "./pages/TellParrot";
 import Sources from "./pages/Sources";
+import Domains from "./pages/Domains";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="organization" element={<ProfileOrganization />} />
             <Route path="tell-parrot" element={<TellParrot />} />
             <Route path="sources" element={<Sources />} />
+            <Route path="domains" element={<Domains />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
