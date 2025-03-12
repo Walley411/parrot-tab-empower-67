@@ -4,6 +4,9 @@ import { useParams, Outlet, Navigate } from 'react-router-dom';
 import { Bird } from 'lucide-react';
 
 const Parrot = () => {
+  // Extract the userId from params to ensure proper navigation
+  const { userId } = useParams<{ userId: string }>();
+
   return (
     <div className="animate-fade-in">
       <div className="teams-card mb-4">

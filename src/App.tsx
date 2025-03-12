@@ -36,9 +36,9 @@ const App = () => (
               <Route path="domains" element={<Domains />} />
             </Route>
             {/* Redirect old routes to new structure */}
-            <Route path="tell-parrot" element={<Navigate to="/profile/:userId/parrot/tell-parrot" replace />} />
-            <Route path="sources" element={<Navigate to="/profile/:userId/parrot/sources" replace />} />
-            <Route path="domains" element={<Navigate to="/profile/:userId/parrot/domains" replace />} />
+            <Route path="tell-parrot" element={<Navigate to="parrot/tell-parrot" replace />} />
+            <Route path="sources" element={<Navigate to="parrot/sources" replace />} />
+            <Route path="domains" element={<Navigate to="parrot/domains" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
