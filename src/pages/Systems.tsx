@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield, Network, TrendingUp, Workflow, MessageCircle, GitBranch } from 'lucide-react';
+import { 
+  Globe, ChevronDown, ChevronRight, Database, Users, Laptop, 
+  Shield, Network, TrendingUp, Workflow, MessageCircle, GitBranch,
+  Star, StarHalf, StarOff
+} from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
 
@@ -376,13 +380,24 @@ const Sources = () => {
     setFilterCategory(category);
   };
 
-  // Render star rating
+  // Render star rating with Lucide icons
   const renderStars = (rating: number) => {
     return (
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <div key={star} className={`w-4 h-4 ${star <= rating ? 'text-amber-400' : 'text-gray-300'}`}>★</div>
-        ))}
+      <div className="flex space-x-0.5">
+        {[1, 2, 3, 4, 5].map((star) => {
+          // Full star
+          if (star <= Math.floor(rating)) {
+            return <Star key={star} size={14} className="text-amber-400 fill-amber-400" />;
+          }
+          // Half star
+          else if (star === Math.ceil(rating) && !Number.isInteger(rating)) {
+            return <StarHalf key={star} size={14} className="text-amber-400 fill-amber-400" />;
+          }
+          // Empty star
+          else {
+            return <Star key={star} size={14} className="text-gray-400" />;
+          }
+        })}
       </div>
     );
   };
