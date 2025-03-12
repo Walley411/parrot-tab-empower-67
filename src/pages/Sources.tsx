@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
@@ -239,15 +240,15 @@ const Sources = () => {
                           ))}
                         </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
