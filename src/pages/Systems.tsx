@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield, Network, TrendingUp, Workflow } from 'lucide-react';
+import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield, Network, TrendingUp, Workflow, MessageCircle, GitBranch } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
 
@@ -69,6 +69,7 @@ const enterpriseSoftware = [
     name: 'SAP ERP',
     description: 'Enterprise Resource Planning system',
     category: 'Business Applications',
+    relatedProjects: ['Digital Transformation', 'Finance Modernization'],
     dataOwners: [
       {
         id: '1',
@@ -93,6 +94,7 @@ const enterpriseSoftware = [
     name: 'Microsoft 365',
     description: 'Productivity and collaboration platform',
     category: 'Productivity',
+    relatedProjects: ['Workplace Modernization', 'Remote Work Initiative'],
     dataOwners: [
       {
         id: '2',
@@ -109,6 +111,7 @@ const enterpriseSoftware = [
     name: 'Salesforce',
     description: 'Customer Relationship Management',
     category: 'Business Applications',
+    relatedProjects: ['Customer 360', 'Sales Enablement'],
     dataOwners: [
       {
         id: '1001',
@@ -133,6 +136,7 @@ const enterpriseSoftware = [
     name: 'ServiceNow',
     description: 'IT Service Management',
     category: 'IT Applications',
+    relatedProjects: ['IT Modernization', 'Self-Service Portal'],
     dataOwners: [
       {
         id: '3001',
@@ -157,6 +161,7 @@ const enterpriseSoftware = [
     name: 'Workday',
     description: 'Human Capital Management',
     category: 'HR Applications',
+    relatedProjects: ['HR Transformation', 'Employee Experience'],
     dataOwners: [
       {
         id: '3002',
@@ -219,13 +224,82 @@ const systemInsights = [
   }
 ];
 
+// Mock user feedback data
+const userFeedback = [
+  {
+    id: '1',
+    system: 'SAP ERP',
+    user: {
+      name: 'Jamie Edwards',
+      department: 'Finance',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+    },
+    date: '2023-06-15',
+    rating: 4,
+    comment: 'The system is working well for financial reporting, but we need better integration with our budgeting tools.',
+    status: 'Under Review'
+  },
+  {
+    id: '2',
+    system: 'Microsoft 365',
+    user: {
+      name: 'Jordan Smith',
+      department: 'Marketing',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+    },
+    date: '2023-07-22',
+    rating: 5,
+    comment: 'The new Teams integration has significantly improved our collaboration across departments.',
+    status: 'Acknowledged'
+  },
+  {
+    id: '3',
+    system: 'Salesforce',
+    user: {
+      name: 'Alex Rivera',
+      department: 'Sales',
+      avatarUrl: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+    },
+    date: '2023-08-05',
+    rating: 3,
+    comment: 'We need better mobile access to customer data when in the field. Current app is too slow.',
+    status: 'In Progress'
+  },
+  {
+    id: '4',
+    system: 'ServiceNow',
+    user: {
+      name: 'Taylor Wong',
+      department: 'IT Support',
+      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+    },
+    date: '2023-09-12',
+    rating: 4,
+    comment: 'Ticket routing has improved but we still need better knowledge base integration.',
+    status: 'Planned'
+  },
+  {
+    id: '5',
+    system: 'Workday',
+    user: {
+      name: 'Morgan Chen',
+      department: 'Human Resources',
+      avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+    },
+    date: '2023-10-03',
+    rating: 5,
+    comment: 'The new performance review module has streamlined our annual review process significantly.',
+    status: 'Implemented'
+  }
+];
+
 const Sources = () => {
   const [expandedSoftware, setExpandedSoftware] = useState<string[]>([]);
   const [filteredSoftware, setFilteredSoftware] = useState(enterpriseSoftware);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [expandedInsights, setExpandedInsights] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'systems', or 'insights'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'systems', 'insights', or 'feedback'
 
   const toggleSoftware = (softwareId: string) => {
     setExpandedSoftware(prev => 
@@ -252,6 +326,11 @@ const Sources = () => {
     return acc;
   }, {} as Record<string, typeof enterpriseSoftware>);
 
+  // Get feedback for a specific system
+  const getFeedbackForSystem = (systemName: string) => {
+    return userFeedback.filter(feedback => feedback.system === systemName);
+  };
+
   useEffect(() => {
     let result = [...enterpriseSoftware];
     
@@ -261,7 +340,8 @@ const Sources = () => {
       result = result.filter(software => 
         software.name.toLowerCase().includes(query) ||
         software.description.toLowerCase().includes(query) ||
-        software.dataOwners.some(owner => owner.name.toLowerCase().includes(query))
+        software.dataOwners.some(owner => owner.name.toLowerCase().includes(query)) ||
+        software.relatedProjects.some(project => project.toLowerCase().includes(query))
       );
     }
     
@@ -288,6 +368,17 @@ const Sources = () => {
     setFilterCategory(category);
   };
 
+  // Render star rating
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <div key={star} className={`w-4 h-4 ${star <= rating ? 'text-amber-400' : 'text-gray-300'}`}>★</div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Tab navigation */}
@@ -312,6 +403,13 @@ const Sources = () => {
         >
           <TrendingUp size={16} className="mr-2" />
           Insights
+        </button>
+        <button
+          className={`flex items-center px-4 py-2 ${activeTab === 'feedback' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
+          onClick={() => setActiveTab('feedback')}
+        >
+          <MessageCircle size={16} className="mr-2" />
+          User Feedback
         </button>
       </div>
 
@@ -427,6 +525,22 @@ const Sources = () => {
                       {expandedSoftware.includes(software.id) && (
                         <div className="animate-slide-in">
                           <div className="p-3 bg-teams-gray border-t border-teams-border">
+                            {/* Related Projects Section */}
+                            <div className="mb-4">
+                              <div className="flex items-center text-teams-secondarytext mb-2">
+                                <GitBranch size={16} className="mr-2" />
+                                <span className="text-sm font-medium">Related Projects</span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {software.relatedProjects.map((project, index) => (
+                                  <div key={index} className="bg-teams-lightgray text-xs px-3 py-1 rounded-full flex items-center">
+                                    <span>{project}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Data Governance Section */}
                             <div className="flex items-center text-teams-secondarytext mb-2">
                               <Users size={16} className="mr-2" />
                               <span className="text-sm font-medium">Data Governance</span>
@@ -500,6 +614,55 @@ const Sources = () => {
                   </div>
                 </div>
               )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'feedback' && (
+        <div className="space-y-4 animate-fade-in">
+          <p className="text-teams-secondarytext text-sm mb-4">
+            User feedback helps us understand how systems are performing and identify areas for improvement.
+          </p>
+          
+          {userFeedback.map(feedback => (
+            <div key={feedback.id} className="border border-teams-border rounded-md overflow-hidden">
+              <div className="p-3 bg-teams-darkgray">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Database size={16} className="mr-2 text-teams-secondarytext" />
+                    <span className="font-medium">{feedback.system}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {renderStars(feedback.rating)}
+                    <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                      feedback.status === 'Implemented' ? 'bg-green-100 text-green-800' :
+                      feedback.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                      feedback.status === 'Planned' ? 'bg-purple-100 text-purple-800' :
+                      feedback.status === 'Under Review' ? 'bg-amber-100 text-amber-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {feedback.status}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-teams-gray border-t border-teams-border">
+                <div className="flex items-start mb-3">
+                  <img 
+                    src={feedback.user.avatarUrl} 
+                    alt={feedback.user.name} 
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
+                  <div>
+                    <p className="text-sm font-medium">{feedback.user.name}</p>
+                    <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
+                  </div>
+                </div>
+                
+                <p className="text-teams-text text-sm">{feedback.comment}</p>
+              </div>
             </div>
           ))}
         </div>
