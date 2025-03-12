@@ -15,7 +15,7 @@ const Governance = () => {
           <h2 className="text-lg font-semibold">Governance</h2>
         </div>
         <p className="text-teams-secondarytext mb-4">
-          Explore and interact with MicoSquawk governance information, view systems, departments, and data domains.
+          Explore and interact with Tell Parrot governance information, view systems, departments, and data domains.
         </p>
         <Outlet />
       </div>
