@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
@@ -172,79 +171,72 @@ const Sources = () => {
   };
 
   return (
-    <div className="animate-fade-in">
-      <div className="teams-card">
-        <div className="flex items-center text-teams-text mb-4">
-          <Database size={20} className="mr-2" />
-          <h2 className="text-lg font-semibold">Enterprise Software</h2>
+    <div>
+      <SearchFilterBar 
+        onSearch={handleSearch}
+        onFilter={handleFilter}
+        filterOptions={filterOptions}
+        placeholder="Search software, descriptions or owners..."
+      />
+      
+      {Object.keys(softwareByCategory).length === 0 ? (
+        <div className="text-teams-secondarytext text-center py-6">
+          No software found matching your criteria
         </div>
-        
-        <SearchFilterBar 
-          onSearch={handleSearch}
-          onFilter={handleFilter}
-          filterOptions={filterOptions}
-          placeholder="Search software, descriptions or owners..."
-        />
-        
-        {Object.keys(softwareByCategory).length === 0 ? (
-          <div className="text-teams-secondarytext text-center py-6">
-            No software found matching your criteria
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {Object.entries(softwareByCategory).map(([category, softwares]) => (
-              <div key={category} className="space-y-2">
-                <h3 className="text-sm text-teams-secondarytext font-medium flex items-center">
-                  <Laptop size={16} className="mr-2" />
-                  {category}
-                </h3>
-                
-                {softwares.map(software => (
-                  <div key={software.id} className="border border-teams-border rounded-md overflow-hidden">
-                    <div 
-                      className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
-                      onClick={() => toggleSoftware(software.id)}
-                    >
-                      <div className="flex items-center">
-                        <Database size={16} className="mr-3 text-teams-secondarytext" />
-                        <div>
-                          <span className="font-medium">{software.name}</span>
-                          <p className="text-xs text-teams-secondarytext">{software.description}</p>
-                        </div>
+      ) : (
+        <div className="space-y-4">
+          {Object.entries(softwareByCategory).map(([category, softwares]) => (
+            <div key={category} className="space-y-2">
+              <h3 className="text-sm text-teams-secondarytext font-medium flex items-center">
+                <Laptop size={16} className="mr-2" />
+                {category}
+              </h3>
+              
+              {softwares.map(software => (
+                <div key={software.id} className="border border-teams-border rounded-md overflow-hidden">
+                  <div 
+                    className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
+                    onClick={() => toggleSoftware(software.id)}
+                  >
+                    <div className="flex items-center">
+                      <Database size={16} className="mr-3 text-teams-secondarytext" />
+                      <div>
+                        <span className="font-medium">{software.name}</span>
+                        <p className="text-xs text-teams-secondarytext">{software.description}</p>
                       </div>
-                      {expandedSoftware.includes(software.id) ? 
-                        <ChevronDown size={18} /> : 
-                        <ChevronRight size={18} />
-                      }
                     </div>
-                    
-                    {expandedSoftware.includes(software.id) && (
-                      <div className="animate-slide-in">
-                        <div className="p-3 bg-teams-gray border-t border-teams-border">
-                          <div className="flex items-center text-teams-secondarytext mb-2">
-                            <Users size={16} className="mr-2" />
-                            <span className="text-sm font-medium">Data Governance</span>
-                          </div>
-                          
-                          <div className="space-y-2 mt-2">
-                            {software.dataOwners.map(owner => (
-                              <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
-                                <AvatarStatus 
-                                  avatarUrl={owner.avatarUrl} 
-                                  status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
-                                  size="small" 
-                                />
-                                <div className="ml-3 flex-1">
-                                  <p className="font-medium text-sm">{owner.name}</p>
-                                  <p className="text-xs text-teams-secondarytext">{owner.title}</p>
-                                </div>
-                                <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
-                                  <Shield size={12} className="mr-1 text-teams-accent" />
-                                  {owner.role}
-                                </div>
+                    {expandedSoftware.includes(software.id) ? 
+                      <ChevronDown size={18} /> : 
+                      <ChevronRight size={18} />
+                    }
+                  </div>
+                  
+                  {expandedSoftware.includes(software.id) && (
+                    <div className="animate-slide-in">
+                      <div className="p-3 bg-teams-gray border-t border-teams-border">
+                        <div className="flex items-center text-teams-secondarytext mb-2">
+                          <Users size={16} className="mr-2" />
+                          <span className="text-sm font-medium">Data Governance</span>
+                        </div>
+                        
+                        <div className="space-y-2 mt-2">
+                          {software.dataOwners.map(owner => (
+                            <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
+                              <AvatarStatus 
+                                avatarUrl={owner.avatarUrl} 
+                                status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
+                                size="small" 
+                              />
+                              <div className="ml-3 flex-1">
+                                <p className="font-medium text-sm">{owner.name}</p>
+                                <p className="text-xs text-teams-secondarytext">{owner.title}</p>
                               </div>
-                            ))}
-                          </div>
+                              <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
+                                <Shield size={12} className="mr-1 text-teams-accent" />
+                                {owner.role}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -255,7 +247,7 @@ const Sources = () => {
           </div>
         )}
       </div>
-    </div>
+    
   );
 };
 
