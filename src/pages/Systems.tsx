@@ -14,7 +14,7 @@ const enterpriseSoftware = [
     dataOwners: [
       {
         id: '1',
-        name: 'Dominic Rebello',
+        name: 'Alex Morgan',
         title: 'PCS External Contractor',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
@@ -22,7 +22,7 @@ const enterpriseSoftware = [
       },
       {
         id: '2',
-        name: 'Joziah Daley',
+        name: 'Taylor Chen',
         title: 'Portfolio Manager',
         role: 'Data Steward',
         avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
@@ -38,7 +38,7 @@ const enterpriseSoftware = [
     dataOwners: [
       {
         id: '2',
-        name: 'Joziah Daley',
+        name: 'Taylor Chen',
         title: 'Portfolio Manager',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
