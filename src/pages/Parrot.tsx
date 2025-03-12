@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useParams, Outlet, Navigate, useLocation } from 'react-router-dom';
-import { ShieldCheck, Building, Database, Globe } from 'lucide-react';
+import { ShieldCheck, Building, Database, Globe, UserCog } from 'lucide-react';
 
 const Governance = () => {
   // Extract the userId from params to ensure proper navigation
@@ -24,6 +24,10 @@ const Governance = () => {
     sectionIcon = <Globe size={20} className="mr-2 text-teams-accent" />;
     sectionTitle = "Domains";
     sectionDescription = "Browse data domains and their relationships";
+  } else if (currentPath.includes('/governance/roles')) {
+    sectionIcon = <UserCog size={20} className="mr-2 text-teams-accent" />;
+    sectionTitle = "Roles";
+    sectionDescription = "Learn about data governance roles and responsibilities";
   }
 
   return (
