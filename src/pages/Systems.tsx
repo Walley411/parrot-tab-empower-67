@@ -161,7 +161,7 @@ const enterpriseSoftware = [
     name: 'Workday',
     description: 'Human Capital Management',
     category: 'HR Applications',
-    relatedProjects: ['HR Transformation', 'Employee Experience'],
+    relatedProjects: ['HR Uplift Strategy 2025', 'Employee Experience'],
     dataOwners: [
       {
         id: '3002',
@@ -672,3 +672,4 @@ const Sources = () => {
 };
 
 export default Sources;
+
