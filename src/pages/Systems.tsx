@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield, UserCog } from 'lucide-react';
+import { Globe, ChevronDown, ChevronRight, Database, Users, Laptop, Shield, Network, TrendingUp, Workflow } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
 
@@ -116,7 +115,7 @@ const enterpriseSoftware = [
         name: 'Blair Dumbell',
         title: 'PCS External Contractor',
         role: 'Data Owner',
-        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767798-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'available'
       },
       {
@@ -171,13 +170,62 @@ const enterpriseSoftware = [
   }
 ];
 
+// Mock data flow for overview
+const dataFlowRelations = [
+  { source: "SAP ERP", target: "Microsoft 365", description: "Customer data synchronization" },
+  { source: "SAP ERP", target: "Salesforce", description: "Order and invoice data" },
+  { source: "Salesforce", target: "ServiceNow", description: "Support ticket creation" },
+  { source: "Workday", target: "SAP ERP", description: "Employee time records" },
+  { source: "Microsoft 365", target: "Workday", description: "Document approvals" },
+  { source: "ServiceNow", target: "Microsoft 365", description: "Notification emails" },
+];
+
+// Mock data insights
+const systemInsights = [
+  {
+    id: "1",
+    title: "Data Quality",
+    current: "72% of critical data fields meet quality standards",
+    future: "Target 95% data quality for all critical fields by Q4",
+    icon: <TrendingUp size={16} className="text-green-500" />
+  },
+  {
+    id: "2",
+    title: "System Integration",
+    current: "Manual intervention required for 30% of data transfers",
+    future: "Implement API-driven integration to reduce manual steps to 5%",
+    icon: <Network size={16} className="text-amber-500" />
+  },
+  {
+    id: "3",
+    title: "Data Governance",
+    current: "60% of data domains have assigned owners",
+    future: "Complete ownership assignment and implement governance tools",
+    icon: <Shield size={16} className="text-blue-500" />
+  },
+  {
+    id: "4",
+    title: "System Architecture",
+    current: "Legacy systems cause data silos in 3 departments",
+    future: "Migrate to cloud-based architecture with unified data lake",
+    icon: <Database size={16} className="text-purple-500" />
+  },
+  {
+    id: "5",
+    title: "Process Automation",
+    current: "25% of data workflows are fully automated",
+    future: "Increase automation to 75% of all routine data processes",
+    icon: <Workflow size={16} className="text-indigo-500" />
+  }
+];
+
 const Sources = () => {
   const [expandedSoftware, setExpandedSoftware] = useState<string[]>([]);
   const [filteredSoftware, setFilteredSoftware] = useState(enterpriseSoftware);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
-  const [expandedRoles, setExpandedRoles] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('systems'); // 'systems' or 'roles'
+  const [expandedInsights, setExpandedInsights] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'systems', or 'insights'
 
   const toggleSoftware = (softwareId: string) => {
     setExpandedSoftware(prev => 
@@ -187,11 +235,11 @@ const Sources = () => {
     );
   };
 
-  const toggleRole = (roleId: string) => {
-    setExpandedRoles(prev => 
-      prev.includes(roleId) 
-        ? prev.filter(id => id !== roleId)
-        : [...prev, roleId]
+  const toggleInsight = (insightId: string) => {
+    setExpandedInsights(prev => 
+      prev.includes(insightId) 
+        ? prev.filter(id => id !== insightId)
+        : [...prev, insightId]
     );
   };
 
@@ -245,6 +293,13 @@ const Sources = () => {
       {/* Tab navigation */}
       <div className="flex border-b border-teams-border mb-4">
         <button
+          className={`flex items-center px-4 py-2 ${activeTab === 'overview' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <Network size={16} className="mr-2" />
+          Overview
+        </button>
+        <button
           className={`flex items-center px-4 py-2 ${activeTab === 'systems' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
           onClick={() => setActiveTab('systems')}
         >
@@ -252,13 +307,81 @@ const Sources = () => {
           Systems
         </button>
         <button
-          className={`flex items-center px-4 py-2 ${activeTab === 'roles' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
-          onClick={() => setActiveTab('roles')}
+          className={`flex items-center px-4 py-2 ${activeTab === 'insights' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
+          onClick={() => setActiveTab('insights')}
         >
-          <UserCog size={16} className="mr-2" />
-          Roles
+          <TrendingUp size={16} className="mr-2" />
+          Insights
         </button>
       </div>
+
+      {activeTab === 'overview' && (
+        <div className="animate-fade-in">
+          <p className="text-teams-secondarytext text-sm mb-4">
+            This overview shows how data flows between different enterprise systems. Each connection represents data exchange between systems.
+          </p>
+          
+          <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border mb-4">
+            <h3 className="font-medium text-teams-text mb-3 flex items-center">
+              <Workflow size={16} className="mr-2 text-teams-accent" />
+              System Data Flow
+            </h3>
+            
+            {/* Simple visual representation of data flow */}
+            <div className="grid gap-2">
+              {dataFlowRelations.map((relation, index) => (
+                <div key={index} className="bg-teams-gray p-3 rounded-md border border-teams-border">
+                  <div className="flex items-center text-teams-text">
+                    <div className="bg-teams-lightgray px-2 py-1 rounded-md flex items-center">
+                      <Database size={14} className="mr-1 text-teams-secondarytext" />
+                      <span className="text-sm font-medium">{relation.source}</span>
+                    </div>
+                    
+                    <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
+                      <div className="h-0.5 bg-teams-border flex-1"></div>
+                      <ChevronRight size={16} className="mx-1" />
+                      <div className="h-0.5 bg-teams-border flex-1"></div>
+                    </div>
+                    
+                    <div className="bg-teams-lightgray px-2 py-1 rounded-md flex items-center">
+                      <Database size={14} className="mr-1 text-teams-secondarytext" />
+                      <span className="text-sm font-medium">{relation.target}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-teams-secondarytext mt-2 text-center">
+                    {relation.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+            <h3 className="font-medium text-teams-text mb-3 flex items-center">
+              <Database size={16} className="mr-2 text-teams-accent" />
+              Systems Summary
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {Object.entries(softwareByCategory).map(([category, softwares]) => (
+                <div key={category} className="bg-teams-gray p-3 rounded-md border border-teams-border">
+                  <h4 className="text-sm font-medium text-teams-text mb-2 flex items-center">
+                    <Laptop size={14} className="mr-2 text-teams-secondarytext" />
+                    {category} ({softwares.length})
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {softwares.map(software => (
+                      <div key={software.id} className="bg-teams-lightgray px-2 py-1.5 rounded text-sm">
+                        {software.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeTab === 'systems' && (
         <>
@@ -340,42 +463,39 @@ const Sources = () => {
         </>
       )}
 
-      {activeTab === 'roles' && (
-        <div className="space-y-4">
+      {activeTab === 'insights' && (
+        <div className="space-y-4 animate-fade-in">
           <p className="text-teams-secondarytext text-sm mb-4">
-            Learn about the different data governance roles and their responsibilities in the organization.
+            System insights provide an overview of the current state and future plans for enterprise systems and data governance.
           </p>
           
-          {governanceRoles.map(role => (
-            <div key={role.id} className="border border-teams-border rounded-md overflow-hidden">
+          {systemInsights.map(insight => (
+            <div key={insight.id} className="border border-teams-border rounded-md overflow-hidden">
               <div 
                 className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
-                onClick={() => toggleRole(role.id)}
+                onClick={() => toggleInsight(insight.id)}
               >
                 <div className="flex items-center">
-                  <Shield size={16} className="mr-3 text-teams-accent" />
-                  <span className="font-medium">{role.title}</span>
+                  {insight.icon}
+                  <span className="font-medium ml-2">{insight.title}</span>
                 </div>
-                {expandedRoles.includes(role.id) ? 
+                {expandedInsights.includes(insight.id) ? 
                   <ChevronDown size={18} /> : 
                   <ChevronRight size={18} />
                 }
               </div>
               
-              {expandedRoles.includes(role.id) && (
+              {expandedInsights.includes(insight.id) && (
                 <div className="animate-slide-in">
                   <div className="p-4 bg-teams-gray border-t border-teams-border">
-                    <p className="text-teams-text mb-3">
-                      {role.description}
-                    </p>
+                    <div className="mb-3">
+                      <h4 className="text-sm font-medium text-teams-secondarytext mb-1">Current State:</h4>
+                      <p className="text-teams-text">{insight.current}</p>
+                    </div>
                     
-                    <div className="mt-3">
-                      <h4 className="text-sm font-medium text-teams-secondarytext mb-2">Key Responsibilities:</h4>
-                      <ul className="space-y-1 pl-5 list-disc text-sm text-teams-text">
-                        {role.responsibilities.map((responsibility, index) => (
-                          <li key={index}>{responsibility}</li>
-                        ))}
-                      </ul>
+                    <div>
+                      <h4 className="text-sm font-medium text-teams-secondarytext mb-1">Future State:</h4>
+                      <p className="text-teams-text">{insight.future}</p>
                     </div>
                   </div>
                 </div>
