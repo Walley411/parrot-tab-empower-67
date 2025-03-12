@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, Building, Database, User } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
 import { departments } from '@/data/mockData';
 
-const TellParrot = () => {
+const Department = () => {
   const [expandedDepartments, setExpandedDepartments] = useState<string[]>([]);
   const [expandedSystems, setExpandedSystems] = useState<string[]>([]);
   const [filteredDepartments, setFilteredDepartments] = useState(departments);
@@ -167,4 +168,4 @@ const TellParrot = () => {
   );
 };
 
-export default TellParrot;
+export default Department;

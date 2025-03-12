@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { useParams, Outlet, Navigate } from 'react-router-dom';
-import { Bird } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
-const Parrot = () => {
+const Governance = () => {
   // Extract the userId from params to ensure proper navigation
   const { userId } = useParams<{ userId: string }>();
 
@@ -11,11 +11,11 @@ const Parrot = () => {
     <div className="animate-fade-in">
       <div className="teams-card mb-4">
         <div className="flex items-center text-teams-text mb-4">
-          <Bird size={20} className="mr-2 text-teams-accent" />
-          <h2 className="text-lg font-semibold">Parrot AI Assistant</h2>
+          <ShieldCheck size={20} className="mr-2 text-teams-accent" />
+          <h2 className="text-lg font-semibold">Governance</h2>
         </div>
         <p className="text-teams-secondarytext mb-4">
-          Explore and interact with the Parrot AI Assistant, view data sources, domains, and tell Parrot what you need.
+          Explore and interact with MicoSquawk governance information, view systems, departments, and data domains.
         </p>
         <Outlet />
       </div>
@@ -23,4 +23,4 @@ const Parrot = () => {
   );
 };
 
-export default Parrot;
+export default Governance;
