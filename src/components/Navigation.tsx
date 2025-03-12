@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, MessageSquare } from 'lucide-react';
 
 interface NavigationProps {
   userId: string;
@@ -17,12 +17,18 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
     { 
       name: 'Governance', 
       path: `/profile/${userId}/governance`,
+      icon: <ShieldCheck size={16} className="mr-1" />,
       subTabs: [
         { name: 'Department', path: `/profile/${userId}/governance/department` },
         { name: 'Systems', path: `/profile/${userId}/governance/systems` },
         { name: 'Domains', path: `/profile/${userId}/governance/domains` },
         { name: 'Roles', path: `/profile/${userId}/governance/roles` }
       ]
+    },
+    {
+      name: 'Copilot', 
+      path: `/profile/${userId}/copilot`,
+      icon: <MessageSquare size={16} className="mr-1" />
     }
   ];
   
@@ -44,7 +50,10 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
                 `teams-tab ${(tab.name === 'Governance' && isGovernanceSubPage) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
               }
             >
-              {tab.name}
+              <div className="flex items-center">
+                {tab.icon && tab.icon}
+                {tab.name}
+              </div>
             </NavLink>
           );
         })}
