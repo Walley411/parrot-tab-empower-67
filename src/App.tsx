@@ -39,6 +39,12 @@ const App = () => (
               <Route path="roles" element={<Roles />} />
             </Route>
             <Route path="copilot" element={<Copilot />} />
+            <Route path="activity" element={<Copilot />} />
+            <Route path="chat" element={<Copilot />} />
+            <Route path="teams" element={<Copilot />} />
+            <Route path="calendar" element={<Copilot />} />
+            <Route path="calls" element={<Copilot />} />
+            <Route path="onedrive" element={<Copilot />} />
             {/* Redirect old routes to new structure */}
             <Route path="parrot" element={<Navigate to="governance" replace />} />
             <Route path="parrot/tell-parrot" element={<Navigate to="governance/department" replace />} />
