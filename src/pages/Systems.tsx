@@ -78,7 +78,7 @@ const enterpriseSoftware = [
       {
         id: '1',
         name: 'Alex Morgan',
-        title: 'PCS External Contractor',
+        title: 'Data Owner',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'available'
@@ -120,7 +120,7 @@ const enterpriseSoftware = [
       {
         id: '1001',
         name: 'Blair Dumbell',
-        title: 'PCS External Contractor',
+        title: 'Sales Manager',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1500648767798-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'available'
@@ -128,7 +128,7 @@ const enterpriseSoftware = [
       {
         id: '1002',
         name: 'Kyle Donnison',
-        title: 'PCS External Contractor',
+        title: 'Sales Specialist',
         role: 'Data Steward',
         avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'away'
@@ -145,7 +145,7 @@ const enterpriseSoftware = [
       {
         id: '3001',
         name: 'Liezel Pieters',
-        title: 'PCS External Contractor',
+        title: 'IT Manager',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'away'
@@ -153,7 +153,7 @@ const enterpriseSoftware = [
       {
         id: '3003',
         name: 'Roselle Abano',
-        title: 'PCS External Contractor',
+        title: 'Data Protection Specialist',
         role: 'Data Protection Officer',
         avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'available'
@@ -170,7 +170,7 @@ const enterpriseSoftware = [
       {
         id: '3002',
         name: 'Ghia Assanova',
-        title: 'PCS External Contractor',
+        title: 'HR Specialist',
         role: 'Data Owner',
         avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80',
         status: 'available'
