@@ -14,6 +14,7 @@ import Governance from "./pages/Parrot";
 import Department from "./pages/TellParrot";
 import Systems from "./pages/Systems";
 import Domains from "./pages/Domains";
+import Roles from "./pages/Roles";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="department" element={<Department />} />
               <Route path="systems" element={<Systems />} />
               <Route path="domains" element={<Domains />} />
+              <Route path="roles" element={<Roles />} />
             </Route>
             {/* Redirect old routes to new structure */}
             <Route path="parrot" element={<Navigate to="governance" replace />} />

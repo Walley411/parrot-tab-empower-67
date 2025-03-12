@@ -20,7 +20,8 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
       subTabs: [
         { name: 'Department', path: `/profile/${userId}/governance/department` },
         { name: 'Systems', path: `/profile/${userId}/governance/systems` },
-        { name: 'Domains', path: `/profile/${userId}/governance/domains` }
+        { name: 'Domains', path: `/profile/${userId}/governance/domains` },
+        { name: 'Roles', path: `/profile/${userId}/governance/roles` }
       ]
     }
   ];
