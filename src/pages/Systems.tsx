@@ -326,6 +326,14 @@ const Sources = () => {
     return acc;
   }, {} as Record<string, typeof enterpriseSoftware>);
 
+  // Get data flows for a specific system
+  const getSystemDataFlows = (systemName: string) => {
+    // Get flows where this system is either the source or target
+    return dataFlowRelations.filter(flow => 
+      flow.source === systemName || flow.target === systemName
+    );
+  };
+
   // Get feedback for a specific system
   const getFeedbackForSystem = (systemName: string) => {
     return userFeedback.filter(feedback => feedback.system === systemName);
@@ -540,6 +548,75 @@ const Sources = () => {
                               </div>
                             </div>
                             
+                            {/* Data Flow Section */}
+                            {getSystemDataFlows(software.name).length > 0 && (
+                              <div className="mb-4">
+                                <div className="flex items-center text-teams-secondarytext mb-2">
+                                  <Workflow size={16} className="mr-2" />
+                                  <span className="text-sm font-medium">Data Flows</span>
+                                </div>
+                                <div className="space-y-2 mt-2">
+                                  {getSystemDataFlows(software.name).map((flow, index) => (
+                                    <div key={index} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
+                                      <div className="flex items-center text-teams-text">
+                                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.source === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                                          <Database size={14} className="mr-1 text-teams-secondarytext" />
+                                          <span className="text-sm">{flow.source}</span>
+                                        </div>
+                                        
+                                        <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
+                                          <div className="h-0.5 bg-teams-border flex-1"></div>
+                                          <ChevronRight size={14} className="mx-1" />
+                                          <div className="h-0.5 bg-teams-border flex-1"></div>
+                                        </div>
+                                        
+                                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.target === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                                          <Database size={14} className="mr-1 text-teams-secondarytext" />
+                                          <span className="text-sm">{flow.target}</span>
+                                        </div>
+                                      </div>
+                                      <p className="text-xs text-teams-secondarytext mt-2 text-center">
+                                        {flow.description}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* User Feedback Section */}
+                            {getFeedbackForSystem(software.name).length > 0 && (
+                              <div className="mb-4">
+                                <div className="flex items-center text-teams-secondarytext mb-2">
+                                  <MessageCircle size={16} className="mr-2" />
+                                  <span className="text-sm font-medium">User Feedback</span>
+                                </div>
+                                <div className="space-y-2 mt-2">
+                                  {getFeedbackForSystem(software.name).map(feedback => (
+                                    <div key={feedback.id} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
+                                      <div className="flex items-start">
+                                        <img 
+                                          src={feedback.user.avatarUrl} 
+                                          alt={feedback.user.name} 
+                                          className="w-6 h-6 rounded-full mr-2"
+                                        />
+                                        <div>
+                                          <div className="flex items-center">
+                                            <p className="text-xs font-medium">{feedback.user.name}</p>
+                                            <div className="ml-2 flex">
+                                              {renderStars(feedback.rating)}
+                                            </div>
+                                          </div>
+                                          <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
+                                          <p className="text-xs mt-1">{feedback.comment}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
                             {/* Data Governance Section */}
                             <div className="flex items-center text-teams-secondarytext mb-2">
                               <Users size={16} className="mr-2" />
@@ -672,4 +749,3 @@ const Sources = () => {
 };
 
 export default Sources;
-
