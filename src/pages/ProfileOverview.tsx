@@ -1,12 +1,32 @@
 
-import React from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Clock, Users, Building, Shield, Database, Globe, FolderTree } from 'lucide-react';
+import React, { useState } from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
+import { 
+  Clock, 
+  Users, 
+  Building, 
+  Shield, 
+  Database, 
+  Globe, 
+  FolderTree, 
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  User
+} from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import { dataDomains, departments } from '@/data/mockData';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ProfileOverview = () => {
   const user = useOutletContext<any>();
+  const navigate = useNavigate();
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Find domains where the user is a steward
   const userDomains = dataDomains.filter(domain => 
@@ -33,6 +53,24 @@ const ProfileOverview = () => {
     }))
   );
 
+  const toggleSection = (section: string) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
+  const navigateToProfile = (userId: string) => {
+    navigate(`/profile/${userId}`);
+  };
+
+  const navigateToSystem = (systemId: string) => {
+    // This would navigate to a system detail view
+    // For now, we'll navigate to governance/systems
+    navigate(`/profile/${user.id}/governance/systems`);
+  };
+
+  const navigateToDomain = (domainId: string) => {
+    navigate(`/profile/${user.id}/governance/domains`);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="teams-card mb-4">
@@ -50,6 +88,153 @@ const ProfileOverview = () => {
           <span>7:11 AM - Your local time</span>
         </div>
       </div>
+
+      {/* Data Governance Roles Section - Prominently displayed at the top */}
+      {(userDomains.length > 0 || userSubdomains.length > 0 || userSystems.length > 0) && (
+        <div className="mb-6">
+          <div className="teams-card">
+            <div className="flex items-center text-teams-text mb-4">
+              <Shield size={20} className="mr-2 text-teams-accent" />
+              <h2 className="text-lg font-semibold">Data Governance Roles</h2>
+            </div>
+            
+            {userDomains.length > 0 && (
+              <div className="mb-4">
+                <div 
+                  className="flex items-center justify-between text-teams-secondarytext mb-2 cursor-pointer p-2 hover:bg-teams-lightgray rounded-md"
+                  onClick={() => toggleSection('domains')}
+                >
+                  <div className="flex items-center">
+                    <Globe size={16} className="mr-2" />
+                    <span className="text-sm font-medium">Domain Steward</span>
+                  </div>
+                  {expandedSection === 'domains' ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                </div>
+                
+                {expandedSection === 'domains' && (
+                  <div className="space-y-2 animate-slide-in pl-6">
+                    {userDomains.map(domain => (
+                      <div 
+                        key={domain.id} 
+                        className="flex items-center justify-between p-2 bg-teams-darkgray rounded-md hover:bg-teams-gray cursor-pointer"
+                        onClick={() => navigateToDomain(domain.id)}
+                      >
+                        <div className="flex items-center">
+                          <Globe size={16} className="mr-2 text-teams-accent" />
+                          <div>
+                            <p className="font-medium">{domain.name}</p>
+                            <p className="text-xs text-teams-secondarytext">{domain.description}</p>
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <ArrowRight size={16} className="text-teams-secondarytext hover:text-teams-text" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View domain details</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {userSubdomains.length > 0 && (
+              <div className="mb-4">
+                <div 
+                  className="flex items-center justify-between text-teams-secondarytext mb-2 cursor-pointer p-2 hover:bg-teams-lightgray rounded-md"
+                  onClick={() => toggleSection('subdomains')}
+                >
+                  <div className="flex items-center">
+                    <FolderTree size={16} className="mr-2" />
+                    <span className="text-sm font-medium">Subdomain Steward</span>
+                  </div>
+                  {expandedSection === 'subdomains' ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                </div>
+                
+                {expandedSection === 'subdomains' && (
+                  <div className="space-y-2 animate-slide-in pl-6">
+                    {userSubdomains.map(subdomain => (
+                      <div 
+                        key={subdomain.id} 
+                        className="flex items-center justify-between p-2 bg-teams-darkgray rounded-md hover:bg-teams-gray cursor-pointer"
+                        onClick={() => navigateToDomain(subdomain.id)}
+                      >
+                        <div className="flex items-center">
+                          <FolderTree size={16} className="mr-2 text-teams-accent" />
+                          <div>
+                            <p className="font-medium">{subdomain.name}</p>
+                            <p className="text-xs text-teams-secondarytext">Part of {subdomain.parentDomain}</p>
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <ArrowRight size={16} className="text-teams-secondarytext hover:text-teams-text" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View subdomain details</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {userSystems.length > 0 && (
+              <div>
+                <div 
+                  className="flex items-center justify-between text-teams-secondarytext mb-2 cursor-pointer p-2 hover:bg-teams-lightgray rounded-md"
+                  onClick={() => toggleSection('systems')}
+                >
+                  <div className="flex items-center">
+                    <Database size={16} className="mr-2" />
+                    <span className="text-sm font-medium">System Owner</span>
+                  </div>
+                  {expandedSection === 'systems' ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                </div>
+                
+                {expandedSection === 'systems' && (
+                  <div className="space-y-2 animate-slide-in pl-6">
+                    {userSystems.map(system => (
+                      <div 
+                        key={system.id} 
+                        className="flex items-center justify-between p-2 bg-teams-darkgray rounded-md hover:bg-teams-gray cursor-pointer"
+                        onClick={() => navigateToSystem(system.id)}
+                      >
+                        <div className="flex items-center">
+                          <Database size={16} className="mr-2 text-teams-accent" />
+                          <div>
+                            <p className="font-medium">{system.name}</p>
+                            <p className="text-xs text-teams-secondarytext">{system.department}</p>
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <ArrowRight size={16} className="text-teams-secondarytext hover:text-teams-text" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View system details</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Contact Information */}
       <h2 className="text-xl font-semibold mb-4">Contact information</h2>
@@ -119,94 +304,35 @@ const ProfileOverview = () => {
             
             <div className="space-y-2">
               {user.managers.map((manager: any) => (
-                <div key={manager.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
-                  <AvatarStatus 
-                    avatarUrl={manager.avatarUrl} 
-                    status={manager.status as 'available' | 'away' | 'busy' | 'offline'} 
-                    size="small" 
-                  />
-                  <div className="ml-3">
-                    <p className="font-medium">{manager.name}</p>
-                    <p className="text-xs text-teams-secondarytext">{manager.title}</p>
+                <div 
+                  key={manager.id} 
+                  className="flex items-center justify-between p-2 rounded-md hover:bg-teams-lightgray cursor-pointer"
+                  onClick={() => navigateToProfile(manager.id)}
+                >
+                  <div className="flex items-center">
+                    <AvatarStatus 
+                      avatarUrl={manager.avatarUrl} 
+                      status={manager.status as 'available' | 'away' | 'busy' | 'offline'} 
+                      size="small" 
+                    />
+                    <div className="ml-3">
+                      <p className="font-medium">{manager.name}</p>
+                      <p className="text-xs text-teams-secondarytext">{manager.title}</p>
+                    </div>
                   </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <User size={16} className="text-teams-secondarytext hover:text-teams-text" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View profile</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Data Responsibilities Section */}
-      {(userDomains.length > 0 || userSubdomains.length > 0 || userSystems.length > 0) && (
-        <div className="mb-6">
-          <div className="teams-card">
-            <div className="flex items-center text-teams-text mb-4">
-              <Shield size={20} className="mr-2" />
-              <h2 className="text-lg font-semibold">Data Responsibilities</h2>
-            </div>
-            
-            {userDomains.length > 0 && (
-              <div className="mb-4">
-                <div className="flex items-center text-teams-secondarytext mb-2">
-                  <Globe size={16} className="mr-2" />
-                  <span className="text-sm font-medium">Domain Steward</span>
-                </div>
-                
-                <div className="space-y-2">
-                  {userDomains.map(domain => (
-                    <div key={domain.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
-                      <Globe size={16} className="mr-2 text-teams-accent" />
-                      <div>
-                        <p className="font-medium">{domain.name}</p>
-                        <p className="text-xs text-teams-secondarytext">{domain.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {userSubdomains.length > 0 && (
-              <div className="mb-4">
-                <div className="flex items-center text-teams-secondarytext mb-2">
-                  <FolderTree size={16} className="mr-2" />
-                  <span className="text-sm font-medium">Subdomain Steward</span>
-                </div>
-                
-                <div className="space-y-2">
-                  {userSubdomains.map(subdomain => (
-                    <div key={subdomain.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
-                      <FolderTree size={16} className="mr-2 text-teams-accent" />
-                      <div>
-                        <p className="font-medium">{subdomain.name}</p>
-                        <p className="text-xs text-teams-secondarytext">Part of {subdomain.parentDomain}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {userSystems.length > 0 && (
-              <div>
-                <div className="flex items-center text-teams-secondarytext mb-2">
-                  <Database size={16} className="mr-2" />
-                  <span className="text-sm font-medium">System Owner</span>
-                </div>
-                
-                <div className="space-y-2">
-                  {userSystems.map(system => (
-                    <div key={system.id} className="flex items-center p-2 bg-teams-darkgray rounded-md">
-                      <Database size={16} className="mr-2 text-teams-accent" />
-                      <div>
-                        <p className="font-medium">{system.name}</p>
-                        <p className="text-xs text-teams-secondarytext">{system.department}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
