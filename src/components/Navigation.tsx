@@ -17,7 +17,6 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
     { 
       name: 'Governance', 
       path: `/profile/${userId}/governance`,
-      icon: ShieldCheck,
       subTabs: [
         { name: 'Department', path: `/profile/${userId}/governance/department` },
         { name: 'Systems', path: `/profile/${userId}/governance/systems` },
@@ -44,7 +43,6 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
                 `teams-tab ${(tab.name === 'Governance' && isGovernanceSubPage) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
               }
             >
-              {tab.name === 'Governance' && <ShieldCheck size={16} className="mr-1" />}
               {tab.name}
             </NavLink>
           );
