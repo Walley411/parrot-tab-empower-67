@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Globe, ChevronDown, ChevronRight, Database, Users, Laptop, 
   Shield, Network, TrendingUp, Workflow, MessageCircle, GitBranch,
-  Star, StarHalf, StarOff
+  Star, StarHalf, StarOff, FolderClosed, FolderOpen
 } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
@@ -304,6 +304,7 @@ const Sources = () => {
   const [filterCategory, setFilterCategory] = useState('');
   const [expandedInsights, setExpandedInsights] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'systems', 'insights', or 'feedback'
+  const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({});
 
   const toggleSoftware = (softwareId: string) => {
     setExpandedSoftware(prev => 
@@ -319,6 +320,13 @@ const Sources = () => {
         ? prev.filter(id => id !== insightId)
         : [...prev, insightId]
     );
+  };
+
+  const toggleDetails = (softwareId: string) => {
+    setExpandedDetails(prev => ({
+      ...prev,
+      [softwareId]: !prev[softwareId]
+    }));
   };
 
   // Group software by category
@@ -548,115 +556,144 @@ const Sources = () => {
                       {expandedSoftware.includes(software.id) && (
                         <div className="animate-slide-in">
                           <div className="p-3 bg-teams-gray border-t border-teams-border">
-                            {/* Related Projects Section */}
+                            {/* Data Governance Section - Always visible when expanded */}
                             <div className="mb-4">
                               <div className="flex items-center text-teams-secondarytext mb-2">
-                                <GitBranch size={16} className="mr-2" />
-                                <span className="text-sm font-medium">Related Projects</span>
+                                <Users size={16} className="mr-2" />
+                                <span className="text-sm font-medium">Data Governance</span>
                               </div>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {software.relatedProjects.map((project, index) => (
-                                  <div key={index} className="bg-teams-lightgray text-xs px-3 py-1 rounded-full flex items-center">
-                                    <span>{project}</span>
+                              
+                              <div className="space-y-2 mt-2">
+                                {software.dataOwners.map(owner => (
+                                  <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
+                                    <AvatarStatus 
+                                      avatarUrl={owner.avatarUrl} 
+                                      status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
+                                      size="small" 
+                                    />
+                                    <div className="ml-3 flex-1">
+                                      <p className="font-medium text-sm">{owner.name}</p>
+                                      <p className="text-xs text-teams-secondarytext">{owner.title}</p>
+                                    </div>
+                                    <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
+                                      <Shield size={12} className="mr-1 text-teams-accent" />
+                                      {owner.role}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
                             </div>
                             
-                            {/* Data Flow Section */}
-                            {getSystemDataFlows(software.name).length > 0 && (
-                              <div className="mb-4">
-                                <div className="flex items-center text-teams-secondarytext mb-2">
-                                  <Workflow size={16} className="mr-2" />
-                                  <span className="text-sm font-medium">Data Flows</span>
-                                </div>
-                                <div className="space-y-2 mt-2">
-                                  {getSystemDataFlows(software.name).map((flow, index) => (
-                                    <div key={index} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
-                                      <div className="flex items-center text-teams-text">
-                                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.source === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
-                                          <Database size={14} className="mr-1 text-teams-secondarytext" />
-                                          <span className="text-sm">{flow.source}</span>
-                                        </div>
-                                        
-                                        <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
-                                          <div className="h-0.5 bg-teams-border flex-1"></div>
-                                          <ChevronRight size={14} className="mx-1" />
-                                          <div className="h-0.5 bg-teams-border flex-1"></div>
-                                        </div>
-                                        
-                                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.target === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
-                                          <Database size={14} className="mr-1 text-teams-secondarytext" />
-                                          <span className="text-sm">{flow.target}</span>
-                                        </div>
-                                      </div>
-                                      <p className="text-xs text-teams-secondarytext mt-2 text-center">
-                                        {flow.description}
-                                      </p>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                            {/* Details toggle button */}
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation(); 
+                                toggleDetails(software.id);
+                              }}
+                              className="w-full flex items-center justify-center py-2 text-sm text-teams-secondarytext bg-teams-darkgray hover:bg-teams-gray rounded-md mb-3"
+                            >
+                              {expandedDetails[software.id] ? (
+                                <>
+                                  <FolderOpen size={14} className="mr-2" />
+                                  Hide Details
+                                </>
+                              ) : (
+                                <>
+                                  <FolderClosed size={14} className="mr-2" />
+                                  Show Details
+                                </>
+                              )}
+                            </button>
                             
-                            {/* User Feedback Section */}
-                            {getFeedbackForSystem(software.name).length > 0 && (
-                              <div className="mb-4">
-                                <div className="flex items-center text-teams-secondarytext mb-2">
-                                  <MessageCircle size={16} className="mr-2" />
-                                  <span className="text-sm font-medium">User Feedback</span>
-                                </div>
-                                <div className="space-y-2 mt-2">
-                                  {getFeedbackForSystem(software.name).map(feedback => (
-                                    <div key={feedback.id} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
-                                      <div className="flex items-start">
-                                        <img 
-                                          src={feedback.user.avatarUrl} 
-                                          alt={feedback.user.name} 
-                                          className="w-6 h-6 rounded-full mr-2"
-                                        />
-                                        <div>
-                                          <div className="flex items-center">
-                                            <p className="text-xs font-medium">{feedback.user.name}</p>
-                                            <div className="ml-2 flex">
-                                              {renderStars(feedback.rating)}
+                            {expandedDetails[software.id] && (
+                              <div className="space-y-4 animate-fade-in mt-3">
+                                {/* Related Projects Section */}
+                                {software.relatedProjects.length > 0 && (
+                                  <div className="mb-4">
+                                    <div className="flex items-center text-teams-secondarytext mb-2">
+                                      <GitBranch size={16} className="mr-2" />
+                                      <span className="text-sm font-medium">Related Projects</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {software.relatedProjects.map((project, index) => (
+                                        <div key={index} className="bg-teams-lightgray text-xs px-3 py-1 rounded-full flex items-center">
+                                          <span>{project}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Data Flow Section */}
+                                {getSystemDataFlows(software.name).length > 0 && (
+                                  <div className="mb-4">
+                                    <div className="flex items-center text-teams-secondarytext mb-2">
+                                      <Workflow size={16} className="mr-2" />
+                                      <span className="text-sm font-medium">Data Flows</span>
+                                    </div>
+                                    <div className="space-y-2 mt-2">
+                                      {getSystemDataFlows(software.name).map((flow, index) => (
+                                        <div key={index} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
+                                          <div className="flex items-center text-teams-text">
+                                            <div className={`px-2 py-1 rounded-md flex items-center ${flow.source === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                                              <Database size={14} className="mr-1 text-teams-secondarytext" />
+                                              <span className="text-sm">{flow.source}</span>
+                                            </div>
+                                            
+                                            <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
+                                              <div className="h-0.5 bg-teams-border flex-1"></div>
+                                              <ChevronRight size={14} className="mx-1" />
+                                              <div className="h-0.5 bg-teams-border flex-1"></div>
+                                            </div>
+                                            
+                                            <div className={`px-2 py-1 rounded-md flex items-center ${flow.target === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                                              <Database size={14} className="mr-1 text-teams-secondarytext" />
+                                              <span className="text-sm">{flow.target}</span>
                                             </div>
                                           </div>
-                                          <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
-                                          <p className="text-xs mt-1">{feedback.comment}</p>
+                                          <p className="text-xs text-teams-secondarytext mt-2 text-center">
+                                            {flow.description}
+                                          </p>
                                         </div>
-                                      </div>
+                                      ))}
                                     </div>
-                                  ))}
-                                </div>
+                                  </div>
+                                )}
+                                
+                                {/* User Feedback Section */}
+                                {getFeedbackForSystem(software.name).length > 0 && (
+                                  <div className="mb-4">
+                                    <div className="flex items-center text-teams-secondarytext mb-2">
+                                      <MessageCircle size={16} className="mr-2" />
+                                      <span className="text-sm font-medium">User Feedback</span>
+                                    </div>
+                                    <div className="space-y-2 mt-2">
+                                      {getFeedbackForSystem(software.name).map(feedback => (
+                                        <div key={feedback.id} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
+                                          <div className="flex items-start">
+                                            <img 
+                                              src={feedback.user.avatarUrl} 
+                                              alt={feedback.user.name} 
+                                              className="w-6 h-6 rounded-full mr-2"
+                                            />
+                                            <div>
+                                              <div className="flex items-center">
+                                                <p className="text-xs font-medium">{feedback.user.name}</p>
+                                                <div className="ml-2 flex">
+                                                  {renderStars(feedback.rating)}
+                                                </div>
+                                              </div>
+                                              <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
+                                              <p className="text-xs mt-1">{feedback.comment}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
-                            
-                            {/* Data Governance Section */}
-                            <div className="flex items-center text-teams-secondarytext mb-2">
-                              <Users size={16} className="mr-2" />
-                              <span className="text-sm font-medium">Data Governance</span>
-                            </div>
-                            
-                            <div className="space-y-2 mt-2">
-                              {software.dataOwners.map(owner => (
-                                <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
-                                  <AvatarStatus 
-                                    avatarUrl={owner.avatarUrl} 
-                                    status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
-                                    size="small" 
-                                  />
-                                  <div className="ml-3 flex-1">
-                                    <p className="font-medium text-sm">{owner.name}</p>
-                                    <p className="text-xs text-teams-secondarytext">{owner.title}</p>
-                                  </div>
-                                  <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
-                                    <Shield size={12} className="mr-1 text-teams-accent" />
-                                    {owner.role}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
                           </div>
                         </div>
                       )}
