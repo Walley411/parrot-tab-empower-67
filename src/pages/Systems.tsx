@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Globe, ChevronDown, ChevronRight, Database, Users, Laptop, 
   Shield, Network, TrendingUp, Workflow, MessageCircle, GitBranch,
-  Star, StarHalf, StarOff, FolderClosed, FolderOpen
+  Star, StarHalf, StarOff, FolderClosed, FolderOpen, X
 } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
 import SearchFilterBar from '@/components/SearchFilterBar';
@@ -297,7 +297,7 @@ const userFeedback = [
   }
 ];
 
-const Sources = () => {
+const Systems = () => {
   const [expandedSoftware, setExpandedSoftware] = useState<string[]>([]);
   const [filteredSoftware, setFilteredSoftware] = useState(enterpriseSoftware);
   const [searchQuery, setSearchQuery] = useState('');
@@ -305,6 +305,7 @@ const Sources = () => {
   const [expandedInsights, setExpandedInsights] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'systems', 'insights', or 'feedback'
   const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({});
+  const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
 
   const toggleSoftware = (softwareId: string) => {
     setExpandedSoftware(prev => 
@@ -329,6 +330,19 @@ const Sources = () => {
     }));
   };
 
+  const selectSystem = (softwareName: string | null) => {
+    setSelectedSystem(softwareName);
+    if (softwareName === null && activeTab === 'system-detail') {
+      setActiveTab('systems');
+    } else if (softwareName !== null) {
+      setActiveTab('system-detail');
+    }
+  };
+
+  const getSelectedSystemData = () => {
+    return enterpriseSoftware.find(software => software.name === selectedSystem);
+  };
+
   // Group software by category
   const softwareByCategory = filteredSoftware.reduce((acc, software) => {
     if (!acc[software.category]) {
@@ -340,7 +354,6 @@ const Sources = () => {
 
   // Get data flows for a specific system
   const getSystemDataFlows = (systemName: string) => {
-    // Get flows where this system is either the source or target
     return dataFlowRelations.filter(flow => 
       flow.source === systemName || flow.target === systemName
     );
@@ -351,10 +364,14 @@ const Sources = () => {
     return userFeedback.filter(feedback => feedback.system === systemName);
   };
 
+  // Get insights related to a system
+  const getInsightsForSystem = (systemName: string) => {
+    return systemInsights;
+  };
+
   useEffect(() => {
     let result = [...enterpriseSoftware];
     
-    // Apply search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(software => 
@@ -365,7 +382,6 @@ const Sources = () => {
       );
     }
     
-    // Apply filter
     if (filterCategory) {
       result = result.filter(software => software.category === filterCategory);
     }
@@ -388,20 +404,16 @@ const Sources = () => {
     setFilterCategory(category);
   };
 
-  // Render star rating with Lucide icons
   const renderStars = (rating: number) => {
     return (
       <div className="flex space-x-0.5">
         {[1, 2, 3, 4, 5].map((star) => {
-          // Full star
           if (star <= Math.floor(rating)) {
             return <Star key={star} size={14} className="text-amber-400 fill-amber-400" />;
           }
-          // Half star
           else if (star === Math.ceil(rating) && !Number.isInteger(rating)) {
             return <StarHalf key={star} size={14} className="text-amber-400 fill-amber-400" />;
           }
-          // Empty star
           else {
             return <Star key={star} size={14} className="text-gray-400" />;
           }
@@ -412,7 +424,6 @@ const Sources = () => {
 
   return (
     <div>
-      {/* Tab navigation */}
       <div className="flex border-b border-teams-border mb-4">
         <button
           className={`flex items-center px-4 py-2 ${activeTab === 'overview' ? 'text-teams-accent border-b-2 border-teams-accent' : 'text-teams-secondarytext hover:text-teams-text'}`}
@@ -442,7 +453,178 @@ const Sources = () => {
           <MessageCircle size={16} className="mr-2" />
           User Feedback
         </button>
+        {activeTab === 'system-detail' && (
+          <button
+            className="flex items-center px-4 py-2 text-teams-accent border-b-2 border-teams-accent"
+          >
+            <Database size={16} className="mr-2" />
+            {selectedSystem}
+          </button>
+        )}
       </div>
+
+      {activeTab === 'system-detail' && selectedSystem && (
+        <div className="animate-fade-in">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-medium flex items-center">
+              <Database size={20} className="mr-2 text-teams-accent" />
+              {selectedSystem}
+            </h2>
+            <button 
+              onClick={() => selectSystem(null)}
+              className="flex items-center text-teams-secondarytext hover:text-teams-text px-2 py-1 rounded-md hover:bg-teams-lightgray"
+            >
+              <X size={16} className="mr-1" />
+              Close
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+              <h3 className="font-medium text-teams-text mb-3 flex items-center">
+                <Shield size={16} className="mr-2 text-teams-accent" />
+                Data Governance
+              </h3>
+              
+              <div className="space-y-2">
+                {getSelectedSystemData().dataOwners.map(owner => (
+                  <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray bg-teams-gray">
+                    <AvatarStatus 
+                      avatarUrl={owner.avatarUrl} 
+                      status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
+                      size="small" 
+                    />
+                    <div className="ml-3 flex-1">
+                      <p className="font-medium text-sm">{owner.name}</p>
+                      <p className="text-xs text-teams-secondarytext">{owner.title}</p>
+                    </div>
+                    <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
+                      <Shield size={12} className="mr-1 text-teams-accent" />
+                      {owner.role}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {getSelectedSystemData().relatedProjects.length > 0 && (
+              <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+                <h3 className="font-medium text-teams-text mb-3 flex items-center">
+                  <GitBranch size={16} className="mr-2 text-teams-accent" />
+                  Related Projects
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {getSelectedSystemData().relatedProjects.map((project, index) => (
+                    <div key={index} className="bg-teams-gray p-3 rounded-md border border-teams-border flex items-center">
+                      <GitBranch size={16} className="mr-2 text-teams-secondarytext" />
+                      <span>{project}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {getSystemDataFlows(getSelectedSystemData().name).length > 0 && (
+              <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+                <h3 className="font-medium text-teams-text mb-3 flex items-center">
+                  <Workflow size={16} className="mr-2 text-teams-accent" />
+                  Data Flows
+                </h3>
+                
+                <div className="space-y-3">
+                  {getSystemDataFlows(getSelectedSystemData().name).map((flow, index) => (
+                    <div key={index} className="bg-teams-gray p-3 rounded-md border border-teams-border">
+                      <div className="flex items-center text-teams-text">
+                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.source === getSelectedSystemData().name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                          <Database size={14} className="mr-1 text-teams-secondarytext" />
+                          <span className="text-sm">{flow.source}</span>
+                        </div>
+                        
+                        <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
+                          <div className="h-0.5 bg-teams-border flex-1"></div>
+                          <ChevronRight size={14} className="mx-1" />
+                          <div className="h-0.5 bg-teams-border flex-1"></div>
+                        </div>
+                        
+                        <div className={`px-2 py-1 rounded-md flex items-center ${flow.target === getSelectedSystemData().name ? 'bg-teams-darkgray font-medium' : ''}`}>
+                          <Database size={14} className="mr-1 text-teams-secondarytext" />
+                          <span className="text-sm">{flow.target}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-teams-secondarytext mt-2 text-center">
+                        {flow.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+              <h3 className="font-medium text-teams-text mb-3 flex items-center">
+                <TrendingUp size={16} className="mr-2 text-teams-accent" />
+                System Insights
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {getInsightsForSystem(getSelectedSystemData().name).map(insight => (
+                  <div key={insight.id} className="bg-teams-gray p-3 rounded-md border border-teams-border">
+                    <div className="flex items-center mb-2">
+                      {insight.icon}
+                      <span className="font-medium ml-2">{insight.title}</span>
+                    </div>
+                    <p className="text-sm mb-1">{insight.current}</p>
+                    <p className="text-xs text-teams-secondarytext">{insight.future}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {getFeedbackForSystem(getSelectedSystemData().name).length > 0 && (
+              <div className="bg-teams-darkgray p-4 rounded-md border border-teams-border">
+                <h3 className="font-medium text-teams-text mb-3 flex items-center">
+                  <MessageCircle size={16} className="mr-2 text-teams-accent" />
+                  User Feedback
+                </h3>
+                
+                <div className="space-y-3">
+                  {getFeedbackForSystem(getSelectedSystemData().name).map(feedback => (
+                    <div key={feedback.id} className="bg-teams-gray p-3 rounded-md border border-teams-border">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center">
+                          <img 
+                            src={feedback.user.avatarUrl} 
+                            alt={feedback.user.name} 
+                            className="w-6 h-6 rounded-full mr-2"
+                          />
+                          <div>
+                            <p className="text-sm font-medium">{feedback.user.name}</p>
+                            <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {renderStars(feedback.rating)}
+                          <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                            feedback.status === 'Implemented' ? 'bg-green-100 text-green-800' :
+                            feedback.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                            feedback.status === 'Planned' ? 'bg-purple-100 text-purple-800' :
+                            feedback.status === 'Under Review' ? 'bg-amber-100 text-amber-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {feedback.status}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-sm">{feedback.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {activeTab === 'overview' && (
         <div className="animate-fade-in">
@@ -456,7 +638,6 @@ const Sources = () => {
               System Data Flow
             </h3>
             
-            {/* Simple visual representation of data flow */}
             <div className="grid gap-2">
               {dataFlowRelations.map((relation, index) => (
                 <div key={index} className="bg-teams-gray p-3 rounded-md border border-teams-border">
@@ -538,7 +719,7 @@ const Sources = () => {
                     <div key={software.id} className="border border-teams-border rounded-md overflow-hidden">
                       <div 
                         className="flex items-center justify-between p-3 bg-teams-darkgray cursor-pointer hover:bg-teams-gray"
-                        onClick={() => toggleSoftware(software.id)}
+                        onClick={() => selectSystem(software.name)}
                       >
                         <div className="flex items-center">
                           <Database size={16} className="mr-3 text-teams-secondarytext" />
@@ -547,156 +728,8 @@ const Sources = () => {
                             <p className="text-xs text-teams-secondarytext">{software.description}</p>
                           </div>
                         </div>
-                        {expandedSoftware.includes(software.id) ? 
-                          <ChevronDown size={18} /> : 
-                          <ChevronRight size={18} />
-                        }
+                        <ChevronRight size={18} />
                       </div>
-                      
-                      {expandedSoftware.includes(software.id) && (
-                        <div className="animate-slide-in">
-                          <div className="p-3 bg-teams-gray border-t border-teams-border">
-                            {/* Data Governance Section - Always visible when expanded */}
-                            <div className="mb-4">
-                              <div className="flex items-center text-teams-secondarytext mb-2">
-                                <Users size={16} className="mr-2" />
-                                <span className="text-sm font-medium">Data Governance</span>
-                              </div>
-                              
-                              <div className="space-y-2 mt-2">
-                                {software.dataOwners.map(owner => (
-                                  <div key={owner.id} className="flex items-center p-2 rounded-md hover:bg-teams-lightgray">
-                                    <AvatarStatus 
-                                      avatarUrl={owner.avatarUrl} 
-                                      status={owner.status as 'available' | 'away' | 'busy' | 'offline'} 
-                                      size="small" 
-                                    />
-                                    <div className="ml-3 flex-1">
-                                      <p className="font-medium text-sm">{owner.name}</p>
-                                      <p className="text-xs text-teams-secondarytext">{owner.title}</p>
-                                    </div>
-                                    <div className="flex items-center px-2 py-1 bg-teams-lightgray rounded text-xs">
-                                      <Shield size={12} className="mr-1 text-teams-accent" />
-                                      {owner.role}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            
-                            {/* Details toggle button */}
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation(); 
-                                toggleDetails(software.id);
-                              }}
-                              className="w-full flex items-center justify-center py-2 text-sm text-teams-secondarytext bg-teams-darkgray hover:bg-teams-gray rounded-md mb-3"
-                            >
-                              {expandedDetails[software.id] ? (
-                                <>
-                                  <FolderOpen size={14} className="mr-2" />
-                                  Hide Details
-                                </>
-                              ) : (
-                                <>
-                                  <FolderClosed size={14} className="mr-2" />
-                                  Show Details
-                                </>
-                              )}
-                            </button>
-                            
-                            {expandedDetails[software.id] && (
-                              <div className="space-y-4 animate-fade-in mt-3">
-                                {/* Related Projects Section */}
-                                {software.relatedProjects.length > 0 && (
-                                  <div className="mb-4">
-                                    <div className="flex items-center text-teams-secondarytext mb-2">
-                                      <GitBranch size={16} className="mr-2" />
-                                      <span className="text-sm font-medium">Related Projects</span>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                      {software.relatedProjects.map((project, index) => (
-                                        <div key={index} className="bg-teams-lightgray text-xs px-3 py-1 rounded-full flex items-center">
-                                          <span>{project}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                                
-                                {/* Data Flow Section */}
-                                {getSystemDataFlows(software.name).length > 0 && (
-                                  <div className="mb-4">
-                                    <div className="flex items-center text-teams-secondarytext mb-2">
-                                      <Workflow size={16} className="mr-2" />
-                                      <span className="text-sm font-medium">Data Flows</span>
-                                    </div>
-                                    <div className="space-y-2 mt-2">
-                                      {getSystemDataFlows(software.name).map((flow, index) => (
-                                        <div key={index} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
-                                          <div className="flex items-center text-teams-text">
-                                            <div className={`px-2 py-1 rounded-md flex items-center ${flow.source === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
-                                              <Database size={14} className="mr-1 text-teams-secondarytext" />
-                                              <span className="text-sm">{flow.source}</span>
-                                            </div>
-                                            
-                                            <div className="flex-1 flex items-center justify-center text-teams-secondarytext mx-2">
-                                              <div className="h-0.5 bg-teams-border flex-1"></div>
-                                              <ChevronRight size={14} className="mx-1" />
-                                              <div className="h-0.5 bg-teams-border flex-1"></div>
-                                            </div>
-                                            
-                                            <div className={`px-2 py-1 rounded-md flex items-center ${flow.target === software.name ? 'bg-teams-darkgray font-medium' : ''}`}>
-                                              <Database size={14} className="mr-1 text-teams-secondarytext" />
-                                              <span className="text-sm">{flow.target}</span>
-                                            </div>
-                                          </div>
-                                          <p className="text-xs text-teams-secondarytext mt-2 text-center">
-                                            {flow.description}
-                                          </p>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                                
-                                {/* User Feedback Section */}
-                                {getFeedbackForSystem(software.name).length > 0 && (
-                                  <div className="mb-4">
-                                    <div className="flex items-center text-teams-secondarytext mb-2">
-                                      <MessageCircle size={16} className="mr-2" />
-                                      <span className="text-sm font-medium">User Feedback</span>
-                                    </div>
-                                    <div className="space-y-2 mt-2">
-                                      {getFeedbackForSystem(software.name).map(feedback => (
-                                        <div key={feedback.id} className="bg-teams-lightgray p-2 rounded-md border border-teams-border">
-                                          <div className="flex items-start">
-                                            <img 
-                                              src={feedback.user.avatarUrl} 
-                                              alt={feedback.user.name} 
-                                              className="w-6 h-6 rounded-full mr-2"
-                                            />
-                                            <div>
-                                              <div className="flex items-center">
-                                                <p className="text-xs font-medium">{feedback.user.name}</p>
-                                                <div className="ml-2 flex">
-                                                  {renderStars(feedback.rating)}
-                                                </div>
-                                              </div>
-                                              <p className="text-xs text-teams-secondarytext">{feedback.user.department} • {feedback.date}</p>
-                                              <p className="text-xs mt-1">{feedback.comment}</p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -800,4 +833,4 @@ const Sources = () => {
   );
 };
 
-export default Sources;
+export default Systems;
