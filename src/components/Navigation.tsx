@@ -12,6 +12,7 @@ import {
   MoreVertical,
   Plus
 } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 interface NavigationProps {
   userId: string;
@@ -62,7 +63,7 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
     return (
       <div className="flex h-screen">
         {/* Left sidebar */}
-        <div className="w-16 bg-[#6e2121] flex flex-col items-center py-4 h-screen fixed left-0 top-0">
+        <div className="w-16 bg-teams-highlight flex flex-col items-center py-4 h-screen fixed left-0 top-0">
           {sidebarItems.map((item, index) => (
             <NavLink
               key={index}
@@ -77,33 +78,41 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
           ))}
         </div>
         
-        {/* This is just the main content - the actual content will be handled by the Copilot component */}
+        {/* Theme toggle in fixed position */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
       </div>
     );
   }
   
   return (
     <nav className="border-b border-teams-border">
-      <div className="flex">
-        {tabs.map((tab) => {
-          const isActive = tab.path === location.pathname || 
-                          (tab.name === 'Governance' && isGovernanceSubPage);
-          
-          return (
-            <NavLink
-              key={tab.name}
-              to={tab.path}
-              className={({ isActive: linkActive }) => 
-                `teams-tab ${(tab.name === 'Governance' && isGovernanceSubPage) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
-              }
-            >
-              <div className="flex items-center">
-                {tab.icon && tab.icon}
-                {tab.name}
-              </div>
-            </NavLink>
-          );
-        })}
+      <div className="flex items-center justify-between pr-4">
+        <div className="flex">
+          {tabs.map((tab) => {
+            const isActive = tab.path === location.pathname || 
+                            (tab.name === 'Governance' && isGovernanceSubPage);
+            
+            return (
+              <NavLink
+                key={tab.name}
+                to={tab.path}
+                className={({ isActive: linkActive }) => 
+                  `teams-tab ${(tab.name === 'Governance' && isGovernanceSubPage) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
+                }
+              >
+                <div className="flex items-center">
+                  {tab.icon && tab.icon}
+                  {tab.name}
+                </div>
+              </NavLink>
+            );
+          })}
+        </div>
+        
+        {/* Add theme toggle */}
+        <ThemeToggle />
       </div>
       
       {/* Sub-navigation for Governance */}
