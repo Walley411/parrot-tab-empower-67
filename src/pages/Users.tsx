@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, Search, Filter, Building, Database, Globe, UserCog, ChevronDown, ChevronRight } from 'lucide-react';
 import AvatarStatus from '@/components/AvatarStatus';
@@ -72,8 +71,12 @@ const Users = () => {
   // Function to get user relationships data
   const getUserRelationships = (userId: string) => {
     // Find departments related to this user
+    // The error was here - looking at the mockData.ts file, departments don't have a members property
+    // Instead, we need to find systems owned by the user
     const userDepartments = departments.filter(dept => 
-      dept.members.some(member => member.id === userId)
+      dept.systems.some(system => 
+        system.owners.some(owner => owner.id === userId)
+      )
     );
     
     // Find systems where user is an owner
