@@ -16,6 +16,7 @@ import Department from "./pages/TellParrot";
 import Systems from "./pages/Systems";
 import Domains from "./pages/Domains";
 import Roles from "./pages/Roles";
+import Users from "./pages/Users";
 import Copilot from "./pages/Copilot";
 
 const queryClient = new QueryClient();
@@ -35,10 +36,11 @@ const App = () => (
               <Route path="organization" element={<ProfileOrganization />} />
               <Route path="governance" element={<Governance />}>
                 <Route index element={<Navigate to="department" replace />} />
-                <Route path="department" element={<Department />} />
-                <Route path="systems" element={<Systems />} />
-                <Route path="domains" element={<Domains />} />
-                <Route path="roles" element={<Roles />} />
+                <Route path="users" element={<Navigate replace to="/profile/:userId/governance" />} />
+                <Route path="department" element={<Navigate replace to="/profile/:userId/governance" />} />
+                <Route path="systems" element={<Navigate replace to="/profile/:userId/governance" />} />
+                <Route path="domains" element={<Navigate replace to="/profile/:userId/governance" />} />
+                <Route path="roles" element={<Navigate replace to="/profile/:userId/governance" />} />
               </Route>
               <Route path="copilot" element={<Copilot />} />
               <Route path="activity" element={<Copilot />} />
@@ -49,12 +51,12 @@ const App = () => (
               <Route path="onedrive" element={<Copilot />} />
               {/* Redirect old routes to new structure */}
               <Route path="parrot" element={<Navigate to="governance" replace />} />
-              <Route path="parrot/tell-parrot" element={<Navigate to="governance/department" replace />} />
-              <Route path="parrot/sources" element={<Navigate to="governance/systems" replace />} />
-              <Route path="parrot/domains" element={<Navigate to="governance/domains" replace />} />
-              <Route path="tell-parrot" element={<Navigate to="governance/department" replace />} />
-              <Route path="sources" element={<Navigate to="governance/systems" replace />} />
-              <Route path="domains" element={<Navigate to="governance/domains" replace />} />
+              <Route path="parrot/tell-parrot" element={<Navigate to="governance" replace />} />
+              <Route path="parrot/sources" element={<Navigate to="governance" replace />} />
+              <Route path="parrot/domains" element={<Navigate to="governance" replace />} />
+              <Route path="tell-parrot" element={<Navigate to="governance" replace />} />
+              <Route path="sources" element={<Navigate to="governance" replace />} />
+              <Route path="domains" element={<Navigate to="governance" replace />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

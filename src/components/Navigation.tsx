@@ -28,13 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
     { 
       name: 'Governance', 
       path: `/profile/${userId}/governance`,
-      icon: <ShieldCheck size={16} className="mr-1" />,
-      subTabs: [
-        { name: 'Department', path: `/profile/${userId}/governance/department` },
-        { name: 'Systems', path: `/profile/${userId}/governance/systems` },
-        { name: 'Domains', path: `/profile/${userId}/governance/domains` },
-        { name: 'Roles', path: `/profile/${userId}/governance/roles` }
-      ]
+      icon: <ShieldCheck size={16} className="mr-1" />
     },
     {
       name: 'Copilot', 
@@ -42,9 +36,6 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
       icon: <MessageSquare size={16} className="mr-1" />
     }
   ];
-  
-  // Check if we're on a governance sub-page
-  const isGovernanceSubPage = location.pathname.includes('/governance/');
   
   // App bar actions for Teams-like interface
   const sidebarItems = [
@@ -92,14 +83,14 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
         <div className="flex">
           {tabs.map((tab) => {
             const isActive = tab.path === location.pathname || 
-                            (tab.name === 'Governance' && isGovernanceSubPage);
+                            (tab.name === 'Governance' && location.pathname.includes('/governance'));
             
             return (
               <NavLink
                 key={tab.name}
                 to={tab.path}
                 className={({ isActive: linkActive }) => 
-                  `teams-tab ${(tab.name === 'Governance' && isGovernanceSubPage) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
+                  `teams-tab ${(tab.name === 'Governance' && location.pathname.includes('/governance')) || linkActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'}`
                 }
               >
                 <div className="flex items-center">
@@ -114,23 +105,6 @@ const Navigation: React.FC<NavigationProps> = ({ userId }) => {
         {/* Add theme toggle */}
         <ThemeToggle />
       </div>
-      
-      {/* Sub-navigation for Governance */}
-      {isGovernanceSubPage && (
-        <div className="flex bg-teams-darkgray border-b border-teams-border">
-          {tabs.find(tab => tab.name === 'Governance')?.subTabs.map((subTab) => (
-            <NavLink
-              key={subTab.name}
-              to={subTab.path}
-              className={({ isActive }) => 
-                `teams-tab ${isActive ? 'teams-tab-active' : 'hover:text-teams-text hover:bg-teams-gray'} text-sm py-1 px-3`
-              }
-            >
-              {subTab.name}
-            </NavLink>
-          ))}
-        </div>
-      )}
     </nav>
   );
 };
